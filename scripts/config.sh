@@ -9,6 +9,8 @@
 # See https://wiki.ubuntu.com/DevelopmentCodeNames for details
 export TARGET_UBUNTU_VERSION="jammy"
 
+export TARGET_ROS_VERSION="humble"
+
 # The Ubuntu Mirror URL. It's better to change for faster download.
 # More mirrors see: https://launchpad.net/ubuntu/+archivemirrors
 export TARGET_UBUNTU_MIRROR="http://us.archive.ubuntu.com/ubuntu/"
@@ -49,11 +51,40 @@ function customize_image() {
     apt-get install -y \
         clamav-daemon \
         terminator \
+        tilix \
+        emacs \
         apt-transport-https \
         curl \
         vim \
+        git \
         nano \
         less
+
+    curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+    install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
+    echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list
+    rm microsoft.gpg
+    apt-get update
+    apt-get install -y code
+
+    apt-get install software-properties-common
+    add-apt-repository -y universe
+    apt-get update
+    export ROS_APT_SOURCE_VERSION=$(curl -s https://api.github.com/repos/ros-infrastructure/ros-apt-source/releases/latest | grep -F "tag_name" | awk -F\" '{print $4}')
+    curl -L -o /tmp/ros2-apt-source.deb "https://github.com/ros-infrastructure/ros-apt-source/releases/download/${ROS_APT_SOURCE_VERSION}/ros2-apt-source_${ROS_APT_SOURCE_VERSION}.$(. /etc/os-release && echo $UBUNTU_CODENAME)_all.deb"
+    dpkg -i /tmp/ros2-apt-source.deb
+    apt-get update
+    apt-get upgrade -y
+    apt-get install -y ros-${TARGET_ROS_VERSION}-desktop
+    apt-get install -y ros-dev-tools
+    apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie
+    apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie-dbgsym
+    apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie-examples
+    apt-get install -y ros-${TARGET_ROS_VERSION}-interfaces
+    apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie-interfaces-dbgsym
+    apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie-py
+    apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie-sim
+    apt-get install -y ros-${TARGET_ROS_VERSION}-turtlebot3
 
     # purge
     apt-get purge -y \
@@ -64,6 +95,8 @@ function customize_image() {
         gnome-sudoku \
         aisleriot \
         hitori
+
+    apt-get autoremove -y
 }
 
 # Used to version the configuration.  If breaking changes occur, manual
