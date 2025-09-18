@@ -92,6 +92,13 @@ function load_config() {
 
 function install_pkg() {
     echo "=====> running install_pkg ... will take a long time ..."
+    if [ ! -f /usr/sbin/policy-rc.d ]; then
+        cat >/usr/sbin/policy-rc.d <<'EOF'
+#!/bin/sh
+exit 101
+EOF
+        chmod +x /usr/sbin/policy-rc.d || true
+    fi
     apt-get -y upgrade
 
     # install live packages
@@ -284,14 +291,26 @@ EOF
 function finish_up() { 
     echo "=====> finish_up"
 
-    # truncate machine id (why??)
-    truncate -s 0 /etc/machine-id
+    # truncate machine id (harmless if already zero)
+    truncate -s 0 /etc/machine-id || true
 
-    # remove diversion (why??)
-    rm /sbin/initctl
-    dpkg-divert --rename --remove /sbin/initctl
+    # remove diversion quietly; don't fail if it's already gone
+    if dpkg-divert --list /sbin/initctl >/dev/null 2>&1; then
+        rm -f /sbin/initctl || true
+        dpkg-divert --rename --remove /sbin/initctl || true
+    fi
 
-    rm -rf /tmp/* ~/.bash_history
+    if command -v fuser >/dev/null 2>&1; then
+        fuser -k -m /run || true
+    fi
+
+    for m in /dev/pts /dev /proc /sys/ run; do
+        if mountpoint -q "$m"; then
+            umount -l "$m" || true
+        fi
+    done
+
+    rm -rf /tmp/* ~/.bash_history || true
 }
 
 # =============   main  ================
