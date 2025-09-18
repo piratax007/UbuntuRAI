@@ -77,6 +77,7 @@ function customize_image() {
     apt-get upgrade -y
     apt-get install -y ros-${TARGET_ROS_VERSION}-desktop-full
     apt-get install -y ros-dev-tools
+    apt-get install -y ros-${TARGET_ROS_VERSION}-motion-capture-tracking
     apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie
     apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie-dbgsym
     apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie-examples
