@@ -80,7 +80,7 @@ function customize_image() {
     apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie
     apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie-dbgsym
     apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie-examples
-    apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie-interfaces
+    apt-get install -y ros-${TARGET_ROS_VERSION}-interfaces
     apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie-interfaces-dbgsym
     apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie-py
     apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie-sim
