@@ -75,7 +75,7 @@ function customize_image() {
     dpkg -i /tmp/ros2-apt-source.deb
     apt-get update
     apt-get upgrade -y
-    apt-get install -y ros-${TARGET_ROS_VERSION}-desktop
+    apt-get install -y ros-${TARGET_ROS_VERSION}-desktop-full
     apt-get install -y ros-dev-tools
     apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie
     apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie-dbgsym
@@ -85,6 +85,7 @@ function customize_image() {
     apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie-py
     apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie-sim
     apt-get install -y ros-${TARGET_ROS_VERSION}-turtlebot3
+
 
     # purge
     apt-get purge -y \
@@ -97,6 +98,8 @@ function customize_image() {
         hitori
 
     apt-get autoremove -y
+    
+    echo "\nsource /opt/ros/${TARGET_ROS_VERSION}/setup.bash" >> ~/.bashrc
 }
 
 # Used to version the configuration.  If breaking changes occur, manual

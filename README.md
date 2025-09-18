@@ -51,8 +51,6 @@ See also the list of [contributors](CONTRIBUTORS.txt) who participated in this p
 >
 > | Scratch  | Host        |
 > |:--------:|:-----------:|
-> | `bionic` | `>= bionic` |
-> | `focal`  | `>= focal`  |
 > | `jammy`  | `>= jammy`  |
 > | `noble`  | `>= noble`  |
 
