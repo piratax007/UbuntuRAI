@@ -17,7 +17,10 @@ jobs:
       - name: Build
         run: |
           cd scripts
-          sed -i -E 's/TARGET_UBUNTU_VERSION=(.*)/TARGET_UBUNTU_VERSION="jammy"/g' default_config.sh
+          sed -i -E \ 
+          -e 's/^TARGET_UBUNTU_VERSION=.*/TARGET_UBUNTU_VERSION="jammy"/' \
+          -e 's/^TARGET_ROS_VERSION=.*/TARGET_ROS_VERSION="humble"/' \
+          config.sh
           ./build.sh -
           cd ..
       - name: Archive artifacts
