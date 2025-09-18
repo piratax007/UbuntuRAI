@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v2
 
       - name: Build
         run: |
@@ -27,27 +27,3 @@ jobs:
           path: |
             scripts/ubuntu-from-scratch.iso
             scripts/image/md5sum.txt
-
-      - name: Cleanup chroot mounts (always)
-        if: always()
-        shell: bash
-        run: |
-          set -x
-          CHROOT="$GITHUB_WORKSPACE/scripts/chroot"
-
-          sudo mount | grep "$CHROOT" || true
-          command -v fuser >/dev/null && sudo fuser -vm "$CHROOT" || true
-
-          if [ -d "$CHROOT" ] ; then
-            sudo chroot "$CHROOT" /bin/bash -c 'killall -q -w -s TERM -u root || true' || true
-          fi
-
-          for m in dev/pts dev proc sys run ; do
-            if mountpoint -q "$CHROOT/$m" ; then
-              sudo umount -l "$CHROOT/$m" || true
-            fi
-          done
-
-          if mountpoint -q "$CHROOT" ; then
-            sudo umount -R -l "$CHROOT" || true
-          fi
