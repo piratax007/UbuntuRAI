@@ -91,12 +91,14 @@ function customize_image() {
 
     apt-get install -y --no-install-recommends linux-firmware network-manager
 
-    if apt-cache show linux-image-generic >/dev/null 2>&1; then
-        apt-get install -y linux-image-generic linux-modules-extra-generic
-    elif apt-cache show linux-image-generic-hwe-22.04 >/dev/null 2>&1; then
-        apt-get install -y linux-image-generic-hwe-22.04 linux-modules-extra-generic-hwe-22.04
-    elif apt-cache show linux-image-virtual >/dev/null 2>&1; then
-        apt-get install -y linux-image-virtual linux-modules-extra-virtual || true
+    if apt-cache show linux-generic >/dev/null 2>&1; then
+        apt-get install -y linux-generic
+    elif grep -q 'VERSION_CODENAME=jammy' /etc/os-release && apt-cache show linux-generic-hwe-22.04 >/dev/null 2>&1; then
+        apt-get install -y linux-generic-hwe-22.04
+    elif apt-cache show linux-image-generic >/dev/null 2>&1; then
+        apt-get install -y linux-image-generic   # also depends on modules-extra versioned pkg
+    else
+        apt-get install -y linux-virtual || true
     fi
     
     for pkg in bcmwl-kernel-source firmware-b43-installer b43-fwcutter; do
