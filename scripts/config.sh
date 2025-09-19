@@ -86,8 +86,8 @@ function customize_image() {
     apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie-py
     apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie-sim
     apt-get install -y ros-${TARGET_ROS_VERSION}-turtlebot3
-    apt-get install -y firefox
-    snap install firefox
+    apt-get install -y snapd
+    apt-get install -y firefox || true
     apt-get install -y --no-install-recommends \
         linux-modules-extra-$(uname -r) \
         linux-firmware \
