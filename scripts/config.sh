@@ -88,10 +88,16 @@ function customize_image() {
     apt-get install -y ros-${TARGET_ROS_VERSION}-turtlebot3
     apt-get install -y snapd
     apt-get install -y firefox || true
-    apt-get install -y --no-install-recommends \
-        linux-modules-extra-$(uname -r) \
-        linux-firmware \
-        network-manager
+
+    apt-get install -y --no-install-recommends linux-firmware network-manager
+
+    if apt-cache show linux-image-generic >/dev/null 2>&1; then
+        apt-get install -y linux-image-generic linux-modules-extra-generic
+    elif apt-cache show linux-image-generic-hwe-22.04 >/dev/null 2>&1; then
+        apt-get install -y linux-image-generic-hwe-22.04 linux-modules-extra-generic-hwe-22.04
+    elif apt-cache show linux-image-virtual >/dev/null 2>&1; then
+        apt-get install -y linux-image-virtual linux-modules-extra-virtual || true
+    fi
     
     for pkg in bcmwl-kernel-source firmware-b43-installer b43-fwcutter; do
         if apt-cache show "$pkg" >/dev/null 2>&1; then
