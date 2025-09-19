@@ -88,7 +88,25 @@ function customize_image() {
     apt-get install -y ros-${TARGET_ROS_VERSION}-turtlebot3
     apt-get install -y firefox
     snap install firefox
+    apt-get install -y --no-install-recommends \
+        linux-modules-extra-$(uname -r) \
+        linux-firmware \
+        network-manager
+    
+    for pkg in bcmwl-kernel-source firmware-b43-installer b43-fwcutter; do
+        if apt-cache show "$pkg" >/dev/null 2>&1; then
+            apt-get install -y "$pkg" || true
+        fi
+    done
 
+    for pkg in rtl8821ce-dkms rtl8821cu-dkms rtl88x2bu-dkms rtl8812au-dkms; do
+        if apt-cache show "$pkg" >/dev/null 2>&1; then
+            apt-get install -y "$pkg" || true
+        fi
+    done
+
+    update-initramfs -u -k all || true
+    depmod -a || true
 
     # purge
     apt-get purge -y \
