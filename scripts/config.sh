@@ -87,6 +87,7 @@ function customize_image() {
     apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie-sim
     apt-get install -y ros-${TARGET_ROS_VERSION}-turtlebot3
     apt-get install -y firefox
+    snap install -y firefox
 
 
     # purge
