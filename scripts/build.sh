@@ -54,23 +54,26 @@ function chroot_enter_setup() {
 }
 
 function chroot_exit_teardown() {
-    sudo chroot chroot /bin/sh -c 'fuser -km /run 2>/dev/null || true'
-    sudo chroot chroot /bin/se -c 'fuser -km /dev/pts 2>/dev/null || true'
-    sudo chroot chroot /bin/sh -c 'sleep 1 || true'
+    if [ -x chroot/bin/sh ]; then
+        sudo chroot chroot /bin/sh -c "command -v fuser >/dev/null 2>&1 && fuser -km /run || true" || true
+        sudo chroot chroot /bin/sh -c "command -v fuser >/dev/null 2>&2 && fuser -km /dev/pts || true" || true
+        sudo chroot chroot /bin/sh -c "sleep 1 || true" || true
+    fi
+
     sync || true
 
-    sudo chroot chroot umount -l /proc || true
-    sudo chroot chroot umount -l /sys || true
-    sudo chroot chroot umount -l /dev/pts || true
+    sudo chroot chroot umount -l /proc >/dev/null 2>&1 || true
+    sudo chroot chroot umount -l /sys >/dev/null 2>&1 || true
+    sudo chroot chroot umount -l /dev/pts >/dev/null 2>&1 || true
 
-    sudo umount -R -l chroot/dev >2/dev/null || sudo umount -l chroot/dev || true
-    sudo umount -R -l chroot/run >2/dev/null || sudo umount -l chroot/run || true
+    if sudo umount -R -l chroot/dev >/dev/null 2>&1; then :; else sudo umount -l chroot/dev 2>&1 || true; fi
+    if sudo umount -R -l chroot/run >/dev/null 2>&1; then :; else sudo umount -l chroot/run 2>&1 || true; fi
 
     sync || true
     sleep 1 || true
 }
 
-trap 'chroot_exit_teardown || true' EXIT INT TERM
+trap "chroot_exit_teardown || true" EXIT INT TERM
 
 function check_host() {
     local os_ver
