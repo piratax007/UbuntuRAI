@@ -101,7 +101,15 @@ function customize_image() {
 
     apt-get autoremove -y
     
-    echo source /opt/ros/${TARGET_ROS_VERSION}/setup.bash >> ~/.bashrc
+    ROS_SETUP="/opt/ros/${TARGET_ROS_VERSION}/setup.bash"
+    cat >/etc/profile.d/ros-setup.sh <<EOL
+
+if [ -f "$ROS_SETUP" ]; then
+    . "$ROS_SETUP"
+fi
+EOL
+    chmod 644 /etc/profile.d/ros-setup.sh
+    echo "[ -f \"$ROS_SETUP\" ] && . \"$ROS_SETUP\"" >> /etc/skel/.bashrc
 }
 
 # Used to version the configuration.  If breaking changes occur, manual
