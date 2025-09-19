@@ -44,20 +44,33 @@ function find_index() {
 }
 
 function chroot_enter_setup() {
-    sudo mount --bind /dev chroot/dev
-    sudo mount --bind /run chroot/run
+    sudo mount --rbind /dev chroot/dev
+    sudo mount --make-rslave chroot/dev
+    sudo mount --rbind /run chroot/run
+    sudo mount --make-rslave chroot/run
     sudo chroot chroot mount none -t proc /proc
     sudo chroot chroot mount none -t sysfs /sys
     sudo chroot chroot mount none -t devpts /dev/pts
 }
 
 function chroot_exit_teardown() {
-    sudo chroot chroot umount /proc
-    sudo chroot chroot umount /sys
-    sudo chroot chroot umount /dev/pts
-    sudo umount chroot/dev
-    sudo umount chroot/run
+    sudo chroot chroot /bin/sh -c 'fuser -km /run 2>/dev/null || true'
+    sudo chroot chroot /bin/se -c 'fuser -km /dev/pts 2>/dev/null || true'
+    sudo chroot chroot /bin/sh -c 'sleep 1 || true'
+    sync || true
+
+    sudo chroot chroot umount -l /proc || true
+    sudo chroot chroot umount -l /sys || true
+    sudo chroot chroot umount -l /dev/pts || true
+
+    sudo umount -R -l chroot/dev >2/dev/null || sudo umount -l chroot/dev || true
+    sudo umount -R -l chroot/run >2/dev/null || sudo umount -l chroot/run || true
+
+    sync || true
+    sleep 1 || true
 }
+
+trap 'chroot_exit_teardown || true' EXIT INT TERM
 
 function check_host() {
     local os_ver
