@@ -33,4 +33,4 @@ fi
 mkfs.ext4 -F -L casper-rw "$part"
 
 echo ">>> Done. Created $part labeled 'casper-rw'."
-echo ">>> Boot the USB and choose:  \"Try Ubuntu FS (persistent)\""
+echo ">>> Boot the USB and choose:  \"Try UbuntuRAI (persistent)\""
