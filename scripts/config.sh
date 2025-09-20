@@ -67,7 +67,7 @@ function customize_image() {
     apt-get update
     apt-get install -y code
 
-    apt-get install software-properties-common
+    apt-get install -y software-properties-common
     add-apt-repository -y universe
     apt-get update
     export ROS_APT_SOURCE_VERSION=$(curl -s https://api.github.com/repos/ros-infrastructure/ros-apt-source/releases/latest | grep -F "tag_name" | awk -F\" '{print $4}')
@@ -100,14 +100,8 @@ function customize_image() {
     else
         apt-get install -y linux-virtual || true
     fi
-    
-    for pkg in bcmwl-kernel-source firmware-b43-installer b43-fwcutter; do
-        if apt-cache show "$pkg" >/dev/null 2>&1; then
-            apt-get install -y "$pkg" || true
-        fi
-    done
 
-    apt-get install -y --no-install-recommends wireless-tools wpasupplicant iw || true
+    apt-get install -y --no-install-recommends wireless-tools wpasupplicant iw ubuntu-drivers-common || true
 
     update-initramfs -u -k all || true
     depmod -a || true
