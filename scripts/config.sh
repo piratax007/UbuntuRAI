@@ -107,11 +107,7 @@ function customize_image() {
         fi
     done
 
-    for pkg in rtl8821ce-dkms rtl8821cu-dkms rtl88x2bu-dkms rtl8812au-dkms; do
-        if apt-cache show "$pkg" >/dev/null 2>&1; then
-            apt-get install -y "$pkg" || true
-        fi
-    done
+    apt-get install -y --no-install-recommends wireless-tools wpasupplicant iw || true
 
     update-initramfs -u -k all || true
     depmod -a || true
