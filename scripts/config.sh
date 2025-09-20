@@ -130,25 +130,26 @@ EOL
     echo "[ -f \"$ROS_SETUP\" ] && . \"$ROS_SETUP\"" >> /etc/skel/.bashrc
 }
 
-    install -d /etc/dconf/profile /etc/dconf/db/local.d
+    apt-get install -y dconf-cli || true
+    mkdir -p /etc/dconf/profile /etc/dconf/db/local.d
     cat >/etc/dconf/profile/user <<'EOF'
-    user-db:user
-    system-db:local
-    EOF
+user-db:user
+system-db:local
+EOF
 
     cat >/etc/dconf/db/local.d/00-background <<'EOF'
-    [org/gnome/desktop/background]
-    picture-uri='file:///usr/share/backgrounds/UbuntuRAI-default.jpg'
-    picture-uri-dark='file:///usr/share/backgrounds/UbuntuRAI-default.jpg'
-    picture-options='zoom'
-    primary-color='#000000'
-    secondary-color='#000000'
+[org/gnome/desktop/background]
+picture-uri='file:///usr/share/backgrounds/UbuntuRAI-default.jpg'
+picture-uri-dark='file:///usr/share/backgrounds/UbuntuRAI-default.jpg'
+picture-options='zoom'
+primary-color='#000000'
+secondary-color='#000000'
 
-    [org/gnome/desktop/screensaver]
-    picture-uri='file:///usr/share/backgrounds/UbuntuRAI-default.jpg'
-    picture-options='zoom'
-    EOF
-    
+[org/gnome/desktop/screensaver]
+picture-uri='file:///usr/share/backgrounds/UbuntuRAI-default.jpg'
+picture-options='zoom'
+EOF
+
     dconf update || true
 
 

@@ -121,6 +121,10 @@ function setup_host() {
 function debootstrap() {
     echo "=====> running debootstrap ... will take a couple of minutes ..."
     sudo debootstrap --arch=amd64 --variant=minbase $TARGET_UBUNTU_VERSION chroot $TARGET_UBUNTU_MIRROR
+
+    if [ -f scripts/wallpaper/UbuntuRAI.jpg ]; then
+        sudo install -D -m 0644 scripts/wallpaper/UbuntuRAI.jpg chroot/usr/share/backgrounds/UbuntuRAI-default.jpg
+    fi
 }
 
 function run_chroot() {
@@ -143,10 +147,6 @@ function run_chroot() {
     sudo rm -f chroot/root/default_config.sh
     if [[ -f "chroot/root/config.sh" ]]; then
         sudo rm -f chroot/root/config.sh
-    fi
-
-    if [ -f scripts/wallpaper/UbuntuRAI.jpg ]; then
-        sudo install -D -m 0644 scripts/wallpaper/UbuntuRAI.jpg chroot/usr/share/backgrounds/UbuntuRAI-default.jpg
     fi
 
     chroot_exit_teardown
