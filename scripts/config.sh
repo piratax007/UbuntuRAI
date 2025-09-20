@@ -88,6 +88,7 @@ function customize_image() {
     apt-get install -y ros-${TARGET_ROS_VERSION}-turtlebot3
     apt-get install -y snapd
     apt-get install -y firefox || true
+    snap install firefox
 
     apt-get install -y --no-install-recommends linux-firmware network-manager
 
@@ -128,6 +129,28 @@ EOL
     chmod 644 /etc/profile.d/ros-setup.sh
     echo "[ -f \"$ROS_SETUP\" ] && . \"$ROS_SETUP\"" >> /etc/skel/.bashrc
 }
+
+    install -d /etc/dconf/profile /etc/dconf/db/local.d
+    cat >/etc/dconf/profile/user <<'EOF'
+    user-db:user
+    system-db:local
+    EOF
+
+    cat >/etc/dconf/db/local.d/00-background <<'EOF'
+    [org/gnome/desktop/background]
+    picture-uri='file:///usr/share/backgrounds/UbuntuRAI-default.jpg'
+    picture-uri-dark='file:///usr/share/backgrounds/UbuntuRAI-default.jpg'
+    picture-options='zoom'
+    primary-color='#000000'
+    secondary-color='#000000'
+
+    [org/gnome/desktop/screensaver]
+    picture-uri='file:///usr/share/backgrounds/UbuntuRAI-default.jpg'
+    picture-options='zoom'
+    EOF
+    
+    dconf update || true
+
 
 # Used to version the configuration.  If breaking changes occur, manual
 # updates to this file from the default may be necessary.

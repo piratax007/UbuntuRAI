@@ -145,6 +145,10 @@ function run_chroot() {
         sudo rm -f chroot/root/config.sh
     fi
 
+    if [ -f scripts/wallpaper/UbuntuRAI.jpg ]; then
+        sudo install -D -m 0644 scripts/wallpaper/UbuntuRAI.jpg chroot/usr/share/backgrounds/UbuntuRAI-default.jpg
+    fi
+
     chroot_exit_teardown
 }
 
