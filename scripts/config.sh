@@ -89,7 +89,7 @@ function customize_image() {
     apt-get install -y snapd
     apt-get install -y firefox || true
     apt-get install -y python3-pip || true
-    pip3 install numpy casadi do-mpc matplotlib
+    pip3 install --no-cache-dir numpy casadi do-mpc matplotlib
 
     apt-get install -y --no-install-recommends linux-firmware network-manager
 
@@ -129,6 +129,10 @@ fi
 EOL
     chmod 644 /etc/profile.d/ros-setup.sh
     echo "[ -f \"$ROS_SETUP\" ] && . \"$ROS_SETUP\"" >> /etc/skel/.bashrc
+
+apt-get -y autoremove --purge || true
+apt-get -y clean || true
+rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/* || true
 }
 
 
