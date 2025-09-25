@@ -89,7 +89,7 @@ function customize_image() {
     apt-get install -y snapd
     apt-get install -y firefox || true
     apt-get install -y python3-pip || true
-    pip3 install --no-cache-dir numpy casadi do-mpc matplotlib
+    apt-get install -y python3-venv || true
 
     apt-get install -y --no-install-recommends linux-firmware network-manager
 
