@@ -133,6 +133,8 @@ EOL
 apt-get -y autoremove --purge || true
 apt-get -y clean || true
 rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /var/tmp/* || true
+
+snap install firefox || true
 }
 
 
