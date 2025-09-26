@@ -53,8 +53,18 @@ sudo ./enable_persistence.sh /dev/sdx
 > Replace `x` in `/dev/sdx` with the correct device letter.
 
 > The entire avilable free space on your USB stick is allocated for persistent storage,
+
 5. Boot your PC from the USB Stick and select the option `Try UbuntuRAI persistent` in the GRUB menu. _You can now add files, install new applications, etc. All changes will be save on the persistence storage and preserved after reboot.
-> On Windows machines, secure boot must be disable to boot from the USB Stick.
+> The images are prepared to be compatible with secure boot. However, if your Windows machine requires disabling Secure Boot in order to boot from the live USB stick, follow one of these options:
+> 1. Before disabling Secure Boot, log into your Microsoft account at [https://account.microsoft.con/devices/recoverykey](https://account.microsoft.con/devices/recoverykey) and save your BitLocker recovery key.
+> When Windows detects the change, you can simple enter the recovery key once, after which it should boot normally.
+>
+> 2. In Windows.
+> - Open Control Panel -> search for BitLocker
+> - Select **Suspend protection**. This keeps the disk encrypted but tells Windows not to enforce boot integrity checks until the next reboot.
+> - Disable Secure Boot and boot UbuntuRAI.
+>
+> **Note:** Suspending BitLocker protection is temporary and requires administrator rights.
 
 ### Verifying the downloaded image
 To ensuer the integrity of the downloaded `.iso` file, use the `md5sum.txt` file provided with the release:

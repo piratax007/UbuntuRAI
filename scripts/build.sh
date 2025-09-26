@@ -175,6 +175,9 @@ function build_iso() {
 
     pushd $SCRIPT_DIR/image
 
+    sudo install -D -m0644 ../chroot/usr/lib/shim/shimx64.efi.signed           isolinux/bootx64.efi
+    sudo install -D -m0644 ../chroot/usr/lib/shim/mmx64.efi.signed             isolinux/mmx64.efi
+
     sudo xorriso \
         -as mkisofs \
         -iso-level 3 \
