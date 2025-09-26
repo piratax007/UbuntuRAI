@@ -93,7 +93,7 @@ function customize_image() {
 
     apt-get install -y --no-install-recommends linux-firmware network-manager
 
-    apt-get install -y shim-signed grup-efi-amd64-signed mokutil sbsigntool
+    apt-get install -y shim-signed grub-efi-amd64-signed mokutil sbsigntool
 
     if apt-cache show linux-generic >/dev/null 2>&1; then
         apt-get install -y linux-generic
