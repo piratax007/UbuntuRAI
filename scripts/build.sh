@@ -174,9 +174,18 @@ function build_iso() {
     printf $(sudo du -sx --block-size=1 chroot | cut -f1) | sudo tee image/casper/filesystem.size
 
     pushd $SCRIPT_DIR/image
+    mkdir -p isolinux
 
-    sudo install -D -m0644 ../chroot/usr/lib/shim/shimx64.efi.signed           isolinux/bootx64.efi
-    sudo install -D -m0644 ../chroot/usr/lib/shim/mmx64.efi.signed             isolinux/mmx64.efi
+    copy_if_exists() { src="$1"; dst="$2"; if [ -f "../chroot${src}" ]; then sudo install -D -m0644 "../chroot${src}" "${dst}"; fi; }
+    
+    copy_if_exists "/usr/lib/shim/shimx64.efi.signed" "isolinux/bootx64.efi"
+    [ -f "isolinux/bootx64.efi" ] || copy_if_exists "/usr/lib/shim/shimx64.efi" "isolinux/bootx64.efi"
+
+    copy_if_exists "/usr/lib/shim/mmx64.efi.signed" "isolinux/mmx64.efi"
+    [ -f "isolinux/mmx64.efi" ] || copy_if_exists "/usr/lib/shim/mmx64.efi" "isolinux/mmx64.efi"
+
+    copy_if_exists "/usr/lib/grub/x86_64-efi-signed/grubx64.efi.signed" "isolinux/grubx64.efi"
+    [ -f "isolinux/grubx64.efi" ] || copy_if_exists "/usr/lib/grub/x86_64-efi-signed/grubx64.efi" "isolinux/grubx64.efi"
 
     sudo xorriso \
         -as mkisofs \
