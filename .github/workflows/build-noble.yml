@@ -3,6 +3,7 @@ name: build-noble
 on:
   push:
     branches: [ master ]
+    tags: [ 'v*', 'v*.*', 'v*.*.*' ]
   pull_request:
     branches: [ master ]
   workflow_dispatch:
@@ -10,6 +11,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
@@ -27,11 +30,23 @@ jobs:
           cd scripts
           sed -i -E -e 's/^TARGET_UBUNTU_VERSION=.*/TARGET_UBUNTU_VERSION="noble"/' -e 's/^TARGET_ROS_VERSION=.*/TARGET_ROS_VERSION="jazzy"/' config.sh
           ./build.sh -
+          mv UbuntuRAI.iso UbuntuRAI-noble-jazzy.iso
           cd ..
-      - name: Archive artifacts
+      - name: Archive artifacts (for CI browsing)
         uses: actions/upload-artifact@v4
         with:
-          name: UbuntuRAI
+          name: UbuntuRAI-noble
           path: |
-            scripts/UbuntuRAI.iso
+            scripts/UbuntuRAI-noble-jazzy.iso
+            scripts/image/md5sum.txt
+      - name: Publish GitHub Release (on tag)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          draf: false
+          prerelease: false
+          files: |
+            scripts/UbuntuRAI-noble-jazzy.iso
             scripts/image/md5sum.txt
