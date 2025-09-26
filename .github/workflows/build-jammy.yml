@@ -32,7 +32,7 @@ jobs:
           ./build.sh -
           mv UbuntuRAI.iso UbuntuRAI-jammy-humble.iso
           sudo apt-get update && sudo apt-get install -y xz-utils
-          xz -T0 -9e -k UbuntuRAI-jammy-humble.iso
+          xz -T0 -9e -c UbuntuRAI-jammy-humble.iso > UbuntuRAI-jammy-humble.iso.xz
           cd ..
       - name: Archive artifacts (for CI browsing)
         uses: actions/upload-artifact@v4
