@@ -1,5 +1,5 @@
 # What is UbuntuRAI
-It is a customized version of Ubuntu that enables, by default, the use of ROS2 and persistence storange on live USB sticks. This allows users to run tests and labs without modifying the host system or requiring virtualization or containers. Additionally, the ISO image can be installed directly on a computer, providing Ubuntu with ROS2 and all included applications preconfigured.
+It is a customized version of Ubuntu that enables, by default, the use of ROS2 and persistent storage on live USB sticks. This allows users to run tests and labs without modifying the host system or requiring virtualization or containers. Additionally, the ISO image can be installed directly on a computer, providing Ubuntu with ROS2 and all included applications preconfigured.
 
 Currently, UbuntuRAI is build in two flavors: **Ubuntu 22.04 Jammy + ROS2 Humble**, and **Ubuntu 24.04 Noble + ROS2 Jazzy**.
 
