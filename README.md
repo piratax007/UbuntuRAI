@@ -32,8 +32,11 @@ Currently, UbuntuRAI is build in two flavors: **Ubuntu 22.04 Jammy + ROS2 Humble
 > The ROS2 installation is sourced on any new terminal by default.
 
 ## How to use the base image
-1. Download the preferred .iso image the GitHub Releases.
-2. Insert the USB stick and its device name by running `lsblk` in a termial.
+1. Due to GitHub's release asset size limitations, each ISO image is split into two `.part` files. Download both `.part` files and reassemble them into a single ISO image, for example.
+```bash
+cat UbuntuRAI-jammy-humble.iso.par.* > UbuntuRAI-jammy-humble.iso
+```
+2. Insert the USB stick and identify its device name by running `lsblk` in a termial.
 3. Burn the image to a USB stick (at least 16 GB)
 
 ```bash
@@ -54,7 +57,7 @@ sudo ./enable_persistence.sh /dev/sdx
 
 > The entire avilable free space on your USB stick is allocated for persistent storage,
 
-5. Boot your PC from the USB Stick and select the option `Try UbuntuRAI persistent` in the GRUB menu. _You can now add files, install new applications, etc. All changes will be save on the persistence storage and preserved after reboot.
+5. Boot your PC from the USB Stick and select the option `Try UbuntuRAI persistent` in the GRUB menu. You can now add files, install new applications, etc. All changes will be save on the persistence storage and preserved after reboot.
 > The images are prepared to be compatible with secure boot. However, if your Windows machine requires disabling Secure Boot in order to boot from the live USB stick, follow one of these options:
 > 1. Before disabling Secure Boot, log into your Microsoft account at [https://account.microsoft.con/devices/recoverykey](https://account.microsoft.con/devices/recoverykey) and save your BitLocker recovery key.
 > When Windows detects the change, you can simple enter the recovery key once, after which it should boot normally.
