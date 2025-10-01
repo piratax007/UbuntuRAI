@@ -28,8 +28,7 @@ jobs:
       - name: Build
         run: |
           cd scripts
-          sed -i -E -e 's/^TARGET_UBUNTU_VERSION=.*/TARGET_UBUNTU_VERSION="noble"/' -e 's/^TARGET_ROS_VERSION=.*/TARGET_ROS_VERSION="jazzy"/' config.sh
-          ./build.sh -
+          TARGET_UBUNTU_VERSION=noble TARGET_ROS_VERSION=jazzy ./build.sh -
           mv UbuntuRAI.iso UbuntuRAI-noble-jazzy.iso
           split -b 1900m -d -a 2 UbuntuRAI-noble-jazzy.iso UbuntuRAI-noble-jazzy.iso.part.
           ls -lh UbuntuRAI-noble-jazzy.iso UbuntuRAI-noble-jazzy.iso.part.* image/md5sum.txt

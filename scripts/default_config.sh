@@ -5,9 +5,20 @@
 # Usage: Copy this file to config.sh and make changes there.  Keep this file (default_config.sh) as-is
 #   so that subsequent changes can be easily merged from upstream.  Keep all customiations in config.sh
 
-# The version of Ubuntu to generate.  Successfully tested LTS: bionic, focal, jammy, noble
+"${TARGET_UBUNTU_VERSION:=jammy}"
+"${TARGET_ROS_VERSION:=}"
+
+if [ -z "$TARGET_ROS_VERSION"]; then
+    case "$TARGET_UBUNTU_VERSION" in
+        jammy) TARGET_ROS_VERSION="humble" ;;
+        noble) TARGET_ROS_VERSION="jazzy" ;;
+        *) TARGET_ROS_VERSION="jazzy" ;;
+    esac
+fi
+
+# The version of Ubuntu to generate.  Successfully tested LTS: jammy, noble
 # See https://wiki.ubuntu.com/DevelopmentCodeNames for details
-export TARGET_UBUNTU_VERSION="jammy"
+export TARGET_UBUNTU_VERSION TARGET_ROS_VERSION
 
 # The Ubuntu Mirror URL. It's better to change for faster download.
 # More mirrors see: https://launchpad.net/ubuntu/+archivemirrors
