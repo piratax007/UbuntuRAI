@@ -28,7 +28,9 @@ jobs:
       - name: Build
         run: |
           cd scripts
-          TARGET_UBUNTU_VERSION=jammy TARGET_ROS_VERSION=humble ./build.sh -
+          sed -i -E 's/TARGET_UBUNTU_VERSION=(.*)/TARGET_UBUNTU_VERSION="jammy"/g' config.sh 
+          sed -i -E 's/TARGET_ROS_VERSION=(.*)/TARGET_ROS_VERSION="humble"/g' config.sh
+          ./build.sh -
           mv UbuntuRAI.iso UbuntuRAI-jammy-humble.iso
           split -b 1900m -d -a 2 UbuntuRAI-jammy-humble.iso UbuntuRAI-jammy-humble.iso.part.
           ls -lh UbuntuRAI-jammy-humble.iso UbuntuRAI-jammy-humble.iso.part.* image/md5sum.txt
