@@ -1,0 +1,55 @@
+name: build-focal
+
+on:
+  push:
+    branches: [ master ]
+    tags: [ 'v*', 'v*.*', 'v*.*.*' ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Free disk space on runner
+        run: |
+          df -h
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache || true
+          sudo docker system prune -af || true
+          sudo apt-get clean
+          sudo rm -rf ~/.cache
+          df -h
+      - name: Build
+        run: |
+          cd scripts
+          sed -i -E 's/TARGET_UBUNTU_VERSION=(.*)/TARGET_UBUNTU_VERSION="focal"/g' config.sh
+          sed -i -E 's/TARGET_ROS_VERSION=(.*)/TARGET_ROS_VERSION="noetic"/g' config.sh
+          ./build.sh -
+          mv UbuntuRAI.iso UbuntuRAI-focal-noetic.iso
+          split -b 1900m -d -a 2 UbuntuRAI-focal-noetic.iso UbuntuRAI-focal-noetic.iso.part.
+          ls -lh UbuntuRAI-focal-noetic.iso UbuntuRAI-focal-noetic.iso.part.* image/md5sum.txt
+          cd ..
+      - name: Archive artifacts (for CI browsing)
+        uses: actions/upload-artifact@v4
+        with:
+          name: UbuntuRAI-focal
+          path: |
+            scripts/UbuntuRAI-focal-noetic.iso.part.*
+            scripts/image/md5sum.txt
+      - name: Publish GitHub Release (on tag)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          files: |
+            scripts/UbuntuRAI-focal-noetic.iso.part.*
+            scripts/image/md5sum.txt

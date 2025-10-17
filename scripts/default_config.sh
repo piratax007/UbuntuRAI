@@ -8,8 +8,9 @@
 "${TARGET_UBUNTU_VERSION:=jammy}"
 "${TARGET_ROS_VERSION:=}"
 
-if [ -z "$TARGET_ROS_VERSION"]; then
+if [ -z "$TARGET_ROS_VERSION" ]; then
     case "$TARGET_UBUNTU_VERSION" in
+        focal) TARGET_ROS_VERSION="noetic" ;;
         jammy) TARGET_ROS_VERSION="humble" ;;
         noble) TARGET_ROS_VERSION="jazzy" ;;
         *) TARGET_ROS_VERSION="jazzy" ;;

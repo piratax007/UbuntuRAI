@@ -11,6 +11,55 @@ export TARGET_UBUNTU_VERSION="jammy"
 
 export TARGET_ROS_VERSION="humble"
 
+function add_ros_repository() {
+    local codename
+    codename=$(awk -F= '/^UBUNTU_CODENAME=/{print $2}' /etc/os-release)
+
+    apt-get install -y ca-certificates curl gnupg lsb-release
+
+    case "$TARGET_ROS_VERSION" in
+        noetic)
+            install -d /usr/share/keyrings
+            curl -fsSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
+                | gpg --dearmor -o /usr/share/keyrings/ros-archive-keyring.gpg
+            echo "deb [arch=amd64 signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] https://packages.ros.org/ros/ubuntu ${codename} main" \
+                > /etc/apt/sources.list.d/ros1-latest.list
+            ;;
+        *)
+            local ros_apt_release
+            ros_apt_release=$(curl -s https://api.github.com/repos/ros-infrastructure/ros-apt-source/releases/latest | \
+                grep -F "tag_name" | awk -F\" '{print $4}')
+            curl -L -o /tmp/ros-apt-source.deb \
+                "https://github.com/ros-infrastructure/ros-apt-source/releases/download/${ros_apt_release}/ros2-apt-source_${ros_apt_release}.${codename}_all.deb"
+            dpkg -i /tmp/ros-apt-source.deb
+            ;;
+    esac
+}
+
+function install_ros_packages() {
+    local ros_packages=(
+        "ros-${TARGET_ROS_VERSION}-desktop-full"
+        "ros-${TARGET_ROS_VERSION}-motion-capture-tracking"
+        "ros-${TARGET_ROS_VERSION}-crazyflie"
+        "ros-${TARGET_ROS_VERSION}-crazyflie-dbgsym"
+        "ros-${TARGET_ROS_VERSION}-crazyflie-examples"
+        "ros-${TARGET_ROS_VERSION}-crazyflie-interfaces"
+        "ros-${TARGET_ROS_VERSION}-crazyflie-interfaces-dbgsym"
+        "ros-${TARGET_ROS_VERSION}-crazyflie-py"
+        "ros-${TARGET_ROS_VERSION}-crazyflie-sim"
+        "ros-${TARGET_ROS_VERSION}-turtlebot3"
+        "ros-dev-tools"
+    )
+
+    for pkg in "${ros_packages[@]}"; do
+        if apt-cache show "$pkg" >/dev/null 2>&1; then
+            apt-get install -y "$pkg"
+        else
+            echo "Skipping unavailable ROS package $pkg"
+        fi
+    done
+}
+
 # The Ubuntu Mirror URL. It's better to change for faster download.
 # More mirrors see: https://launchpad.net/ubuntu/+archivemirrors
 export TARGET_UBUNTU_MIRROR="http://us.archive.ubuntu.com/ubuntu/"
@@ -70,22 +119,10 @@ function customize_image() {
     apt-get install -y software-properties-common
     add-apt-repository -y universe
     apt-get update
-    export ROS_APT_SOURCE_VERSION=$(curl -s https://api.github.com/repos/ros-infrastructure/ros-apt-source/releases/latest | grep -F "tag_name" | awk -F\" '{print $4}')
-    curl -L -o /tmp/ros2-apt-source.deb "https://github.com/ros-infrastructure/ros-apt-source/releases/download/${ROS_APT_SOURCE_VERSION}/ros2-apt-source_${ROS_APT_SOURCE_VERSION}.$(. /etc/os-release && echo $UBUNTU_CODENAME)_all.deb"
-    dpkg -i /tmp/ros2-apt-source.deb
+    add_ros_repository
     apt-get update
     apt-get upgrade -y
-    apt-get install -y ros-${TARGET_ROS_VERSION}-desktop-full
-    apt-get install -y ros-dev-tools
-    apt-get install -y ros-${TARGET_ROS_VERSION}-motion-capture-tracking
-    apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie
-    apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie-dbgsym
-    apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie-examples
-    apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie-interfaces
-    apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie-interfaces-dbgsym
-    apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie-py
-    apt-get install -y ros-${TARGET_ROS_VERSION}-crazyflie-sim
-    apt-get install -y ros-${TARGET_ROS_VERSION}-turtlebot3
+    install_ros_packages
     apt-get install -y snapd
     apt-get install -y firefox || true
     apt-get install -y python3-pip || true
