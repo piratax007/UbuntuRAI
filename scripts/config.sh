@@ -22,7 +22,8 @@ function add_ros_repository() {
             install -d /usr/share/keyrings
             curl -fsSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
                 | gpg --dearmor -o /usr/share/keyrings/ros-archive-keyring.gpg
-            echo "deb [arch=amd64 signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] https://packages.ros.org/ros/ubuntu ${codename} main" \
+            # ROS publishes an HTTP endpoint only; HTTPS certificate does not match packages.ros.org
+            echo "deb [arch=amd64 signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros/ubuntu ${codename} main" \
                 > /etc/apt/sources.list.d/ros1-latest.list
             ;;
         *)
