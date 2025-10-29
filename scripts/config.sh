@@ -129,21 +129,52 @@ function customize_image() {
     apt-get install -y python3-pip || true
     apt-get install -y python3-venv || true
 
-    apt-get install -y --no-install-recommends linux-firmware network-manager
+    # Install firmware and drivers with retry logic to handle rate limiting
+    echo "Installing firmware and network manager..."
+    for attempt in 1 2 3; do
+        if apt-get install -y --no-install-recommends --fix-missing linux-firmware network-manager; then
+            break
+        else
+            echo "Attempt $attempt failed, waiting 30 seconds before retry..."
+            sleep 30
+            apt-get update
+        fi
+    done
 
     apt-get install -y shim-signed grub-efi-amd64-signed mokutil sbsigntool
 
-    if apt-cache show linux-generic >/dev/null 2>&1; then
-        apt-get install -y linux-generic
-    elif grep -q 'VERSION_CODENAME=jammy' /etc/os-release && apt-cache show linux-generic-hwe-22.04 >/dev/null 2>&1; then
-        apt-get install -y linux-generic-hwe-22.04
-    elif apt-cache show linux-image-generic >/dev/null 2>&1; then
-        apt-get install -y linux-image-generic   # also depends on modules-extra versioned pkg
-    else
-        apt-get install -y linux-virtual || true
-    fi
+    # Install kernel with retry logic
+    echo "Installing kernel packages..."
+    for attempt in 1 2 3; do
+        kernel_installed=false
+        if apt-cache show linux-generic >/dev/null 2>&1; then
+            if apt-get install -y --fix-missing linux-generic; then
+                kernel_installed=true
+            fi
+        elif grep -q 'VERSION_CODENAME=jammy' /etc/os-release && apt-cache show linux-generic-hwe-22.04 >/dev/null 2>&1; then
+            if apt-get install -y --fix-missing linux-generic-hwe-22.04; then
+                kernel_installed=true
+            fi
+        elif apt-cache show linux-image-generic >/dev/null 2>&1; then
+            if apt-get install -y --fix-missing linux-image-generic; then
+                kernel_installed=true
+            fi
+        else
+            if apt-get install -y --fix-missing linux-virtual || true; then
+                kernel_installed=true
+            fi
+        fi
+        
+        if [ "$kernel_installed" = true ]; then
+            break
+        else
+            echo "Kernel installation attempt $attempt failed, waiting 30 seconds before retry..."
+            sleep 30
+            apt-get update
+        fi
+    done
 
-    apt-get install -y --no-install-recommends wireless-tools wpasupplicant iw ubuntu-drivers-common || true
+    apt-get install -y --no-install-recommends --fix-missing wireless-tools wpasupplicant iw ubuntu-drivers-common || true
 
     update-initramfs -u -k all || true
     depmod -a || true
